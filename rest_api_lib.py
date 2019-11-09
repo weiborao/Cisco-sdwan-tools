@@ -14,19 +14,18 @@ import time
 import logging
 
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
-logging.debug('Start of program')
+# logging.debug('Start of program')
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 class rest_api(object):
     instance=None
-    def __init__(self, vmanage_ip, username, password,port = 443,tenant=None, tenant_id=None):
+    def __init__(self, vmanage_ip, username, password,port = 443,tenant=None):
         self.vmanage_ip = vmanage_ip
         self.port = port
         self.session = {}
         self.token=None
         self.tenant=tenant
-        self.tenant_id=tenant_id
         self.VSessionId=None
         self.login(self.vmanage_ip, port, username, password)
 
@@ -70,12 +69,6 @@ class rest_api(object):
         response = self.session.get(base_url_str+ "/dataservice/client/token", verify=False)
         if response.status_code==200:
             self.token = response.text
-
-    def list_tenant(self):
-        self.VSessionId=None
-        resp = self.get_request("tenant")
-        data = resp.json()
-        print(data)
 
     def set_tenant(self, tenant):
         self.VSessionId=None
@@ -133,16 +126,6 @@ class rest_api(object):
         else:
             response=self.session.put(url=url,headers=headers,verify=False)
         return response
-
-    def post_vsession(self,tenant_id=''):
-        """Get a session cookie"""
-        # self.VSessionId=None
-        if tenant_id == '':
-            return 0
-        else:
-            mount_point = 'tenant/' + tenant_id + '/vsessionid?tenant_id=' + tenant_id
-            response = self.post_request(mount_point, payload='')
-            return response
 
     def query_dpi(self, hours='24'):
         """Query DPI data from vManage"""
@@ -212,14 +195,14 @@ class rest_api(object):
         device_config = response.json()['data'][0]
         with open(uuid + '.json', 'w') as file_obj:
             json.dump(device_config, file_obj)
-        file_path = here + uuid + '.json'
+        file_path = here + '/' + uuid + '.json'
         print(file_path, '\n', device_config)
         return file_path
 
     def push_cli_config(self, uuid, templateId=''):
-        """Push CLI config to Device"""
-        mount_point = 'template/device/config/attachcli'
-        # print('DEBUG: push cli config, payload: ', payload, '\n', type(payload))
+        """Preview and Push CLI config to Device"""
+        # preview_mount_point = 'template/device/config/config/'
+        push_mount_point = 'template/device/config/attachcli/'
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
         cli_template = {
@@ -237,10 +220,12 @@ class rest_api(object):
         else:
             print("UUID not equal")
             return 'UUID not equal'
-        print('DEBUG: cli_tempdata type:', type(cli_template), '\n', cli_template)
         time.sleep(1)
-        response = self.post_request(mount_point, cli_template)
-        return response
+        # preview_response = self.post_request(preview_mount_point, cli_template)
+        # print(preview_response.text)
+
+        push_response = self.post_request(push_mount_point, cli_template)
+        return push_response
 
     def check_job(self, job_id):
         """Check Job Status"""
@@ -270,7 +255,6 @@ def set_env():
     server_choice = int(server_choice)
 
     server_info = sdwan_env.server_list[server_choice]
-    print(server_info)
 
     if server_info['tenant'] != 'single_tenant_mode':
         print("Please choose the tenant.")
@@ -285,8 +269,14 @@ def set_env():
     elif server_info['tenant'] == 'single_tenant_mode':
         print("vManage is in single tenant mode.")
 
-    with open("server_info.json", "w") as file_obj:
+    with open("current_env.json", "w") as file_obj:
         json.dump(server_info, file_obj)
         print("Set env to {name}\nHostname: {hostname}".format(
             name=server_info['server_name'],
             hostname=server_info['hostname']))
+
+def show_env(SDWAN_SERVER, SDWAN_IP, TENANT):
+    print("The current environment are:")
+    print("Server name: {}".format(SDWAN_SERVER))
+    print("Hostname: {}".format(SDWAN_IP))
+    print("Tenant: {}".format(TENANT))
