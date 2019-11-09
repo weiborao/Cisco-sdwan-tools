@@ -1,13 +1,13 @@
 # Cisco-sdwan-tools
 
-###### What does the script do?
+## What does the script do?
 
 This SDWAN tool help user to quickly export device config data to a .json file. 
 And user can edit it by text editor, and then push the config back to vManage.
 
 Currently, this tool can only get and push the devices with CLI templates.
 
-###### How to Run the Script?
+## How to Run the Script?
 
 **Prerequirment**: please install requests module.
 pip install requests
@@ -33,7 +33,7 @@ Then you can edit it.
 python3 sdwan_tools.py push 1920C539181628S
 It will return the job_id and track the job status.
 sample output:
-`Job summary ==========
+Job summary ==========
  Job Status: Success
 Job activies:
 [1-Nov-2019 10:58:37 CST] Configuring device with cli template: Box
@@ -42,4 +42,4 @@ Job activies:
 [1-Nov-2019 10:58:39 CST] Device is online
 [1-Nov-2019 10:58:39 CST] Updating device configuration in vManage
 [1-Nov-2019 10:58:40 CST] Pushing configuration to device
-[1-Nov-2019 10:58:49 CST] Template successfully attached to device`
+[1-Nov-2019 10:58:49 CST] Template successfully attached to device
