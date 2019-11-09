@@ -11,6 +11,10 @@ import requests
 import sdwan_env
 import os
 import time
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
+logging.debug('Start of program')
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -67,17 +71,21 @@ class rest_api(object):
         if response.status_code==200:
             self.token = response.text
 
-    def set_tenant(self,tenant_id):
+    def list_tenant(self):
         self.VSessionId=None
         resp = self.get_request("tenant")
         data = resp.json()
-        # tenant_id =None
-        # if data.get("data") and len(data.get("data"))>0:
-        #     for tenant in data["data"]:
-        #         if str(tenant["name"])==str(tenant_name):
-        #             tenant_id = tenant["tenantId"]
-        #         elif str(tenant["tenantId"])==str(tenant_name):
-        #             tenant_id = tenant["tenantId"]
+        print(data)
+
+    def set_tenant(self, tenant):
+        self.VSessionId=None
+        resp = self.get_request("tenant")
+        data = resp.json()
+        tenant_id =None
+        if data.get("data") and len(data.get("data"))>0:
+            for item in data["data"]:
+                if str(item["name"])==str(tenant):
+                    tenant_id = item["tenantId"]
         if tenant_id:
             resp = self.post_request("tenant/{}/vsessionid".format(tenant_id),{})
             data = resp.json()
@@ -89,7 +97,9 @@ class rest_api(object):
         """GET request"""
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
+        logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers)))
         response = self.session.get(url, verify=False, headers=headers)
+        logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers) + str(response.text)))
         if response.status_code>=300:
             response.raise_for_status()
         elif response.status_code==200:
@@ -99,11 +109,12 @@ class rest_api(object):
 
     def post_request(self, mount_point, payload):
         """POST request"""
-        url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip,self.port, mount_point)
+        url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         payload = json.dumps(payload)
-        print(headers,'\n',payload)
+        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers)))
         response = self.session.post(url=url, data=payload, headers=headers, verify=False)
+        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers) + str(response.text)))
         return response
 
     def put_request(self, mount_point, payload=None):
@@ -125,7 +136,7 @@ class rest_api(object):
 
     def post_vsession(self,tenant_id=''):
         """Get a session cookie"""
-        self.VSessionId=None
+        # self.VSessionId=None
         if tenant_id == '':
             return 0
         else:

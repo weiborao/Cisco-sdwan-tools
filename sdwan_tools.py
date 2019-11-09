@@ -1,36 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import json
+import sys
 from rest_api_lib import *
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-server_info_book = 'server_info.json'
-
-try:
-    with open(server_info_book, 'r') as f_obj:
-        server_info = json.load(f_obj)
-
-# 如果文件不存在
-except FileNotFoundError:
-    msg = "Sorry, the file " + server_info_book + " does not exist.\n"
-    print(msg)
-    set_env()
-    with open(server_info_book, 'r') as f_obj:
-        server_info = json.load(f_obj)
-
-print(dir(server_info),'\n',server_info.keys())
-SDWAN_IP = server_info['hostname']
-SDWAN_PORT = server_info['port']
-SDWAN_USERNAME = server_info['username']
-SDWAN_PASSWORD = server_info['password']
-if server_info['tenant'] != 'single_tenant_mode':
-    TENANT_ID = server_info['tenant'][0]['id']
-    TENANT = server_info['tenant'][0]['name']
-else:
-    TENANT_ID = None
-    TENANT = None
-
 
 if __name__ == "__main__":
     help_msg = '''\nUsage: 
@@ -56,6 +30,32 @@ if __name__ == "__main__":
         action = sys.argv[1]
         device_sn = sys.argv[2]
 
+        server_info_book = 'server_info.json'
+
+        try:
+            with open(server_info_book, 'r') as f_obj:
+                server_info = json.load(f_obj)
+
+        # 如果文件不存在
+        except FileNotFoundError:
+            msg = "Sorry, the file " + server_info_book + " does not exist.\n"
+            print(msg)
+            set_env()
+            with open(server_info_book, 'r') as f_obj:
+                server_info = json.load(f_obj)
+
+        # print(dir(server_info), '\n', server_info)
+        SDWAN_IP = server_info['hostname']
+        SDWAN_PORT = server_info['port']
+        SDWAN_USERNAME = server_info['username']
+        SDWAN_PASSWORD = server_info['password']
+        if server_info['tenant'] != 'single_tenant_mode':
+            TENANT_ID = server_info['tenant'][0]['id']
+            TENANT = server_info['tenant'][0]['name']
+        else:
+            TENANT_ID = None
+            TENANT = None
+
         if action == 'get' or action == 'push' or action == 'dpi':
 
             sdwanp = rest_api(
@@ -66,8 +66,8 @@ if __name__ == "__main__":
                 tenant=TENANT,
                 tenant_id=TENANT_ID)
             if TENANT_ID != None:
-                sdwanp.post_vsession(TENANT_ID)
-                sdwanp.set_tenant(TENANT_ID)
+                sdwanp.set_tenant(TENANT)
+                # sdwanp.post_vsession(TENANT_ID)
 
             if action == 'dpi':
                 response = sdwanp.query_dpi('6')
@@ -93,7 +93,6 @@ if __name__ == "__main__":
                     print(item)
                 # logout = sdwanp.vmanage_logout()
                 sys.exit(0)
-
 
         elif action == 'set' and device_sn == 'env':
             server_info = None
