@@ -86,8 +86,11 @@ if __name__ == "__main__":
             templateId=device_info['data'][0]['templateId']
             if action == 'show_run':
                 response = sdwanp.get_device_running(uuid=target_obj)
+                running_config = response.json()['config']
                 with open(target_obj + ".txt", 'w') as file_obj:
-                    file_obj.write(response.json()['config'])
+                    file_obj.write(running_config)
+                print(running_config)
+                sys.exit(0)
 
             if action == 'get':
                 response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
