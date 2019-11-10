@@ -96,7 +96,7 @@ if __name__ == "__main__":
             if action == 'push':
                 template_type = sdwanp.get_template_type(templateId)
                 preview_config = sdwanp.preview_config(uuid=target_obj, templateId=templateId)
-                print(preview_config)
+                print(preview_config.text)
                 ready_to_go = input("Please check and confirm the configuration...(y/n):")
                 loop_control = 1
                 while loop_control == 1:
