@@ -12,6 +12,13 @@ logging.debug("Start of program")
 
 if __name__ == "__main__":
     help_msg = '''\nUsage: 
+            选择vManage Server和Tenant
+            python3 sdwan_tools.py set env 
+            
+            获取设备当前配置文件
+            python3 sdwan_tools.py show_run device_sn
+            例如：python3 sdwan_tools.py show_run 1920C539181628S
+            
             导出设备配置，存成json文件
             python3 sdwan_tools.py get device_sn 
             例如：python3 sdwan_tools.py get 1920C539181628S
@@ -23,13 +30,10 @@ if __name__ == "__main__":
             查看当前的vManage Server和Tenant
             python3 sdwan_tools.py show env 
 
-            选择vManage Server和Tenant
-            python3 sdwan_tools.py set env 
-            
             单租户测试：
             pyhthon3 sdwan_tools.py dpi info\n'''
 
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 0:
         print(help_msg)
         sys.exit(0)
     else:
@@ -62,7 +66,7 @@ if __name__ == "__main__":
 
         logging.debug("Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
 
-        if action == 'get' or action == 'push' or (action == 'dpi' and target_obj == 'info'):
+        if action in ["get", "show_run", "push", "dpi"]:
 
             sdwanp = rest_api(
                 vmanage_ip=SDWAN_IP,
@@ -73,21 +77,44 @@ if __name__ == "__main__":
             if TENANT != "single_tenant_mode":
                 sdwanp.set_tenant(TENANT)
 
-            if action == 'dpi':
+            if action == 'dpi' and target_obj == 'info':
                 response = sdwanp.query_dpi('6')
                 print(response.json()['data'])
                 sys.exit(0)
 
             device_info = sdwanp.get_device_info(target_obj).json()
             templateId=device_info['data'][0]['templateId']
+            if action == 'show_run':
+                response = sdwanp.get_device_running(uuid=target_obj)
+                with open(target_obj + ".txt", 'w') as file_obj:
+                    file_obj.write(response.json()['config'])
+
             if action == 'get':
-                response = sdwanp.get_device_config(uuid=target_obj, templateId=templateId)
+                response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
                 # logout = sdwanp.vmanage_logout()
                 sys.exit(0)
             if action == 'push':
-                push_cli_response = sdwanp.push_cli_config(uuid=target_obj, templateId=templateId)
-                job_id = push_cli_response.json()
-                print(job_id)
+                template_type = sdwanp.get_template_type(templateId)
+                preview_config = sdwanp.preview_config(uuid=target_obj, templateId=templateId)
+                print(preview_config)
+                ready_to_go = input("Please check and confirm the configuration...(y/n):")
+                loop_control = 1
+                while loop_control == 1:
+                    if ready_to_go == 'y':
+                        if template_type == 'file':
+                            push_cli_response = sdwanp.push_cli_config(uuid=target_obj, templateId=templateId)
+                            job_id = push_cli_response.json()
+                        elif template_type == 'template':
+                            push_template_response = sdwanp.push_template_config(uuid=target_obj, templateId=templateId)
+                            job_id = push_template_response.json()
+                        loop_control = 0
+                    elif ready_to_go == 'n':
+                        print("Job canceled...Exit")
+                        sys.exit(0)
+                    else:
+                        print("Please input y or n.")
+                        ready_to_go = input("Please check and confirm the configuration...(y/n):")
+
                 job_status = sdwanp.check_job(job_id).json()
                 print('Job summary', '='*10, '\n Job Status: {status}'.format(
                 status = job_status['data'][0]['status']))

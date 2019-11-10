@@ -14,6 +14,8 @@ import time
 import logging
 
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
+# logging.disable(logging.CRITICAL)
+
 # logging.debug('Start of program')
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -92,7 +94,7 @@ class rest_api(object):
         headers = self.get_headers()
         logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers)))
         response = self.session.get(url, verify=False, headers=headers)
-        logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers) + str(response.text)))
+        logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers) + '\n' + str(response.text)))
         if response.status_code>=300:
             response.raise_for_status()
         elif response.status_code==200:
@@ -105,9 +107,9 @@ class rest_api(object):
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         payload = json.dumps(payload)
-        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers)))
+        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers) + '\n' + str(payload)))
         response = self.session.post(url=url, data=payload, headers=headers, verify=False)
-        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers) + str(response.text)))
+        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers) + '\n' + str(response.text)))
         return response
 
     def put_request(self, mount_point, payload=None):
@@ -184,7 +186,25 @@ class rest_api(object):
         response = self.get_request(mount_point)
         return response
 
-    def get_device_config(self, uuid, templateId=''):
+    def get_device_running(self, uuid):
+        """Get device running config"""
+        mount_point = 'template/config/running/' + uuid
+        response = self.get_request(mount_point)
+        return response
+
+    def get_template_type(self, templateId):
+        """Get the template type"""
+        mount_point = 'template/device'
+        response = self.get_request(mount_point)
+        data = response.json()
+        template_type = ''
+        if data.get("data") and len(data.get("data"))>0:
+            for item in data["data"]:
+                if item["templateId"]==templateId:
+                    template_type = item["configType"]
+        return template_type
+
+    def get_device_cli_data(self, uuid, templateId=''):
         """Get device config by template"""
         payload = {
                 "templateId": templateId,
@@ -197,11 +217,10 @@ class rest_api(object):
             json.dump(device_config, file_obj)
         file_path = here + '/' + uuid + '.json'
         print(file_path, '\n', device_config)
-        return file_path
+        return response
 
     def push_cli_config(self, uuid, templateId=''):
-        """Preview and Push CLI config to Device"""
-        # preview_mount_point = 'template/device/config/config/'
+        """Push CLI config to Device"""
         push_mount_point = 'template/device/config/attachcli/'
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
@@ -221,10 +240,58 @@ class rest_api(object):
             print("UUID not equal")
             return 'UUID not equal'
         time.sleep(1)
-        # preview_response = self.post_request(preview_mount_point, cli_template)
-        # print(preview_response.text)
 
         push_response = self.post_request(push_mount_point, cli_template)
+        return push_response
+
+    def push_template_config(self, uuid, templateId=''):
+        """Push CLI config to Device"""
+        push_mount_point = 'template/device/config/attachfeature'
+        with open(uuid + '.json', 'r') as file_obj:
+            config_data = json.load(file_obj)
+        config_data['csv-templateId'] = templateId
+        feature_template = {
+            "deviceTemplateList": [
+                {
+                    "device": [
+                    ],
+                    "isEdited": False,
+                    "templateId": templateId
+                }
+            ]
+        }
+        if uuid == config_data['csv-deviceId']:
+            feature_template['deviceTemplateList'][0]['device'].append(config_data)
+        else:
+            print("UUID not equal")
+            return 'UUID not equal'
+        time.sleep(1)
+
+        push_response = self.post_request(push_mount_point, feature_template)
+        return push_response
+
+    def preview_config(self,uuid, templateId=''):
+        """Preview the config"""
+        preview_mount_point = 'template/device/config/config/'
+        with open(uuid + '.json', 'r') as file_obj:
+            config_data = json.load(file_obj)
+        config_data['csv-templateId']=templateId
+
+        preview_template = {
+            "device": {},
+            "templateId": templateId,
+            "isEdited": False,
+            "isMasterEdited": False,
+            "isRFSRequired": True
+        }
+        if uuid == config_data['csv-deviceId']:
+            preview_template['device']=config_data
+        else:
+            print("UUID not equal")
+            return 'UUID not equal'
+        time.sleep(1)
+
+        push_response = self.post_request(preview_mount_point, preview_template)
         return push_response
 
     def check_job(self, job_id):
@@ -233,12 +300,12 @@ class rest_api(object):
         while True:
             time.sleep(10)
             response = self.get_request(mount_point)
-            # print('DEBUG: check_job response :',response.status_code, '\n',
-            #       response.headers, '\n', response.text, '\n', response.url)
+
             if response.status_code == 200:
-                if response.json()['data'][0]['status'] == 'Success':
+                if response.json()['data'][0]['status'] in ["Success", "Done - Scheduled"]:
                     return response
-                else:
+                elif response.json()['data'][0]['status'] == "In progress":
+                    print("Job is in progress...")
                     continue
             else:
                 return '''{job_status: "failed", actionConfig: "job failed"}'''

@@ -5,7 +5,7 @@
 This SDWAN tool help user to quickly export device config data to a .json file. 
 And user can edit it by text editor, and then push the config back to vManage.
 
-Currently, this tool can only get and push the devices with CLI templates.
+This tool can  get and push the devices with CLI templates as well as Feature templates.
 
 ## How to Run the Script?
 
