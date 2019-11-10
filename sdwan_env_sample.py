@@ -9,16 +9,13 @@ server_list = [
         "password": "xd13ddcdd",
         "tenant": [
             {
-                "name": "T1",
-                "id": "1553514871443",
+                "name": "T1"
             },
             {
                 "name": "T2",
-                "id": "1553514659609",
             },
             {
                 "name": "T3",
-                "id": "1559543230903",
             }]
     },
     {
