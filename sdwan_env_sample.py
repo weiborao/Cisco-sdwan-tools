@@ -12,10 +12,10 @@ server_list = [
                 "name": "T1"
             },
             {
-                "name": "T2",
+                "name": "T2"
             },
             {
-                "name": "T3",
+                "name": "T3"
             }]
     },
     {
