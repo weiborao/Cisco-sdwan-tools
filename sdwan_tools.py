@@ -33,7 +33,7 @@ if __name__ == "__main__":
             单租户测试：
             pyhthon3 sdwan_tools.py dpi info\n'''
 
-    if len(sys.argv) < 0:
+    if len(sys.argv) < 3:
         print(help_msg)
         sys.exit(0)
     else:
