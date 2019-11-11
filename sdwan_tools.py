@@ -86,14 +86,19 @@ if __name__ == "__main__":
             templateId=device_info['data'][0]['templateId']
             if action == 'show_run':
                 response = sdwanp.get_device_running(uuid=target_obj)
-                if data.get('config') and len(data.get('config')) > 0:
-                    running_config = response.json()['config']
-                    with open(target_obj + ".txt", 'w') as file_obj:
-                        file_obj.write(running_config)
-                    print(running_config)
-                elif data.get('error') and len(data.get('error')) > 0:
-                    err_msg = response.json()['error']['detail']
-                    print(err_msg)
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('config') and len(data.get('config')) > 0:
+                        running_config = response.json()['config']
+                        with open(target_obj + ".txt", 'w') as file_obj:
+                            file_obj.write(running_config)
+                        print(running_config)
+                else:
+                    if response.json().get('error') and len(response.json().get('error')) > 0:
+                        err_msg = response.json()['error']['details']
+                        print(err_msg)
+                    else:
+                        print("Error:", response.status_code, response.text)
                 sys.exit(0)
 
             if action == 'get':

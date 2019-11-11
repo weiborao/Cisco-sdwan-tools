@@ -95,12 +95,13 @@ class rest_api(object):
         logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers)))
         response = self.session.get(url, verify=False, headers=headers)
         logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers) + '\n' + str(response.text)))
-        if response.status_code>=300:
-            response.raise_for_status()
-        elif response.status_code==200:
-            return response
-        else:
-            return None
+        # if response.status_code>=300:
+            # response.raise_for_status()
+            # return response
+        # elif response.status_code==200:
+        return response
+        # else:
+        #     return None
 
     def post_request(self, mount_point, payload):
         """POST request"""
