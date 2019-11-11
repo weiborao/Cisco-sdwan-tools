@@ -29,9 +29,10 @@ Please make sure you input the right SN, as the script does not handle input err
 The json data will be written to file 1920C539181628S.json
 Then you can edit it.
 
-(5) Push the json data to vManage by running python3 sdwan_tools pus `device_sn`
+(5) Push the json data to vManage by running python3 sdwan_tools push `device_sn`
 python3 sdwan_tools.py push 1920C539181628S
 It will return the job_id and track the job status.
+`
 sample output:
 Job summary ==========
  Job Status: Success
@@ -43,3 +44,5 @@ Job activies:
 [1-Nov-2019 10:58:39 CST] Updating device configuration in vManage
 [1-Nov-2019 10:58:40 CST] Pushing configuration to device
 [1-Nov-2019 10:58:49 CST] Template successfully attached to device
+`
+(6) show run function. python3 sdwan_tools show_run `device_sn`
