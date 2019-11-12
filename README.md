@@ -1,6 +1,6 @@
 # Cisco-sdwan-config-tool
 
-##1. What does the tool do?
+## 1. What does the tool do?
 
 - This SDWAN tool help user to quickly export device config data to a .json file. And user can edit it by text editor, and then push the config back to vManage;
 
@@ -8,14 +8,14 @@
 
 - This tool supports single tenant vManage as well as Multi-tenant vManage.
 
-##2. How to Run the Script?
+## 2. How to Run the Script?
 
 **Prerequirment**: please install requests module.
     %pip install requests
     %git clone https://github.com/weiborao/Cisco-sdwan-tools
     %cd Cisco-sdwan-tools/
 
-###1. Setup the environment
+### 1. Setup the environment
 (1) Please rename the _sdwan_env_sample.py_ to _sdwan_env.py_.
 And edit the server information.
 
