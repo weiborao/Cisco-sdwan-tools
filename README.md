@@ -15,8 +15,8 @@
     %git clone https://github.com/weiborao/Cisco-sdwan-tools
     %cd Cisco-sdwan-tools/
 
-### 1. Setup the environment
-(1) Please rename the _sdwan_env_sample.py_ to _sdwan_env.py_.
+### (1) Setup the environment
+1. Please rename the _sdwan_env_sample.py_ to _sdwan_env.py_.
 And edit the server information.
 
 ```python
@@ -52,7 +52,7 @@ server_list = [
 ]
 ```
 
-(2) You need to set the environment by running _python3 sdwan_tools.py set env
+2. You need to set the environment by running _python3 sdwan_tools.py set env
 
     Cisco-sdwan-tools % python sdwan_tools.py set env
     Please choose the server you want to connect.
@@ -67,15 +67,15 @@ server_list = [
     Set env to chusdwan
     Hostname: 180.37.12.38
 
-(3) You can check the current env by running _python3 sdwan_tools.py show env
+3. You can check the current env by running _python3 sdwan_tools.py show env
 
     The current environment are:
     Server name: chusdwan
     Hostname: 180.37.12.38
     Tenant: T1
 
-### 2. Export, Edit and Push the Config back
-(1) Export the json data of the CLI config from vManage by running python3 sdwan_tools get device_sn
+### (2) Export, Edit and Push the Config back
+4. Export the json data of the CLI config from vManage by running python3 sdwan_tools get device_sn
 For example: 
 `Cisco-sdwan-tools % python3 sdwan_tools.py get 1920C539181628S`
 Please make sure you input the right SN, as the script does not handle input errors.
@@ -151,7 +151,7 @@ for string in str_list:
 The output will be:
 > vpn 0\n dns 114.114.114.114 primary\n interface ge0/4\n  ip dhcp-client\n  pppoe-client ppp-interface ppp1\n  no shutdown\n !\n interface ppp1\n  ppp authentication chap\n   hostname 86152074\n   password xxxxx\n  !\n  tunnel-interface\n   encapsulation ipsec\n   color biz-internet restrict\n   no allow-service bgp\n   allow-service dhcp\n   allow-service dns\n   allow-service icmp\n   no allow-service sshd\n   no allow-service netconf\n   no allow-service ntp\n   no allow-service ospf\n   no allow-service stun\n   allow-service https\n  !\n  mtu      1492\n  no shutdown\n !\n!\n
 
-(2) Push the json data to vManage by running python3 sdwan_tools push device_sn
+5. Push the json data to vManage by running python3 sdwan_tools push device_sn
 `Cisco-sdwan-tools % python3 sdwan_tools.py push 1920C539181628S`
 ```
 ....Output omitted
@@ -213,8 +213,8 @@ Job activies:
 [12-Nov-2019 22:13:55 CST] Template successfully attached to device
 ```
 
-### 3. Other small tools:
-(6) show run function. python3 sdwan_tools show_run device_sn
+### (3) Other small tools:
+6. show run function. python3 sdwan_tools show_run device_sn
 You can quickly get the running config and save to files.
 `Cisco-sdwan-tools % python sdwan_tools.py show_run 1920C539181628S`
 ```
@@ -264,7 +264,7 @@ policy
 !
 ```
 
-(7) Get DPI aggregated info.
+7. Get DPI aggregated info.
 This is just for fun.
 `python3 sdwan_tools.py dpi info`
 
@@ -281,10 +281,10 @@ If you have any issues or a pull request, you can submit a Issue or contact me d
 
 My Cisco CEC ID is: werao
 
-## License
+## 6. License
 This project is licensed to you under the terms of the [Cisco Sample Code License](LICENSE.md).
 
-## Acknowledgments
+## 7. Acknowledgments
 
 * Getting Started with Cisco SD-WAN REST APIs
   - `git clone https://github.com/ai-devnet/Getting-started-with-Cisco-SD-WAN-REST-APIs.git`
