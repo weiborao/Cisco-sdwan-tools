@@ -289,4 +289,4 @@ This project is licensed to you under the terms of the [Cisco Sample Code Licens
 * Getting Started with Cisco SD-WAN REST APIs
   - `git clone https://github.com/ai-devnet/Getting-started-with-Cisco-SD-WAN-REST-APIs.git`
 * Cisco SD-WAN EXIM (Export and Import)
- - `git clone https://github.com/CiscoSE/cisco-sd-wan-export-import`
+  - `git clone https://github.com/CiscoSE/cisco-sd-wan-export-import`
