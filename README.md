@@ -11,9 +11,11 @@
 ## 2. How to Run the Script?
 
 **Prerequirment**: please install requests module.
-    %pip install requests
-    %git clone https://github.com/weiborao/Cisco-sdwan-tools
-    %cd Cisco-sdwan-tools/
+```
+%pip install requests
+%git clone https://github.com/weiborao/Cisco-sdwan-tools
+%cd Cisco-sdwan-tools/
+```
 
 ### (1) Setup the environment
 1. Please rename the _sdwan_env_sample.py_ to _sdwan_env.py_.
