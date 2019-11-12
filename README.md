@@ -282,7 +282,7 @@ If you have any issues or a pull request, you can submit a Issue or contact me d
 My Cisco CEC ID is: werao
 
 ## 6. License
-This project is licensed to you under the terms of the [Cisco Sample Code License](LICENSE.md).
+This project is licensed to you under the terms of the [Cisco Sample Code License](LICENSE).
 
 ## 7. Acknowledgments
 
