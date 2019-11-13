@@ -56,30 +56,34 @@ server_list = [
 
 2. You need to set the environment by running _python3 sdwan_tools.py set env
 
-    Cisco-sdwan-tools % python sdwan_tools.py set env
-    Please choose the server you want to connect.
-    (0) chusdwan
-    (1) dcloudrtp
-    Choose your server:**0**
-    Please choose the tenant.
-    (0) T1
-    (1) T2
-    (2) T3
-    Choose your tenant:**0**
-    Set env to chusdwan
-    Hostname: 180.37.12.38
+```
+Cisco-sdwan-tools % python sdwan_tools.py set env
+Please choose the server you want to connect.
+(0) chusdwan
+(1) dcloudrtp
+Choose your server:**0**
+Please choose the tenant.
+(0) T1
+(1) T2
+(2) T3
+Choose your tenant:**0**
+Set env to chusdwan
+Hostname: 180.37.12.38
+```
 
 3. You can check the current env by running _python3 sdwan_tools.py show env
-
-    The current environment are:
-    Server name: chusdwan
-    Hostname: 180.37.12.38
-    Tenant: T1
+```
+The current environment are:
+Server name: chusdwan
+Hostname: 180.37.12.38
+Tenant: T1
+```
 
 ### (2) Export, Edit and Push the Config back
 4. Export the json data of the CLI config from vManage by running python3 sdwan_tools get device_sn
 For example: 
 `Cisco-sdwan-tools % python3 sdwan_tools.py get 1920C539181628S`
+
 Please make sure you input the right SN, as the script does not handle input errors.
 
 The json data will be written to file 1920C539181628S.json
@@ -143,7 +147,6 @@ multilin_str = '''vpn 0
  !
 !
 '''
-
 str_list = multilin_str.splitlines()
 
 for string in str_list:
@@ -155,7 +158,8 @@ The output will be:
 
 5. Push the json data to vManage by running python3 sdwan_tools push device_sn
 `Cisco-sdwan-tools % python3 sdwan_tools.py push 1920C539181628S`
-```
+
+```python
 ....Output omitted
   vpn 0
    interface ge0/4
@@ -198,6 +202,7 @@ The output will be:
 !
 
 Please check and confirm the configuration...(y/n):y
+
 ```
 It will return the job_id and track the job status.
 
