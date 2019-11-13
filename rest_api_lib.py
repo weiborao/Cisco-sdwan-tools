@@ -92,9 +92,9 @@ class rest_api(object):
         """GET request"""
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
-        logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers)))
+        logging.debug('Start of get_request %s' % (url + '\t' + str(headers)))
         response = self.session.get(url, verify=False, headers=headers)
-        logging.debug('Start of get_request(%s)' % (url + '\t' + str(headers) + '\n' + str(response.text)))
+        logging.debug('Start of get_request %s' % (url + '\t' + str(headers) + '\n' + str(response.text)))
         # if response.status_code>=300:
             # response.raise_for_status()
             # return response
@@ -108,9 +108,9 @@ class rest_api(object):
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         payload = json.dumps(payload)
-        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers) + '\n' + str(payload)))
+        logging.debug('Start of post_request %s' % (url + '\t' + str(headers) + '\n' + str(payload)))
         response = self.session.post(url=url, data=payload, headers=headers, verify=False)
-        logging.debug('Start of post_request(%s)' % (url + '\t' + str(headers) + '\n' + str(response.text)))
+        logging.debug('Start of post_request %s' % (url + '\t' + str(headers) + '\n' + str(response.text)))
         return response
 
     def put_request(self, mount_point, payload=None):
@@ -214,6 +214,9 @@ class rest_api(object):
         mount_point = 'template/device/config/input/'
         response = self.post_request(mount_point, payload)
         device_config = response.json()['data'][0]
+        if '/' in uuid:
+            uuid = uuid.replace('/', '_')
+        logging.debug('Start of get_request %s' % uuid)
         with open(uuid + '.json', 'w') as file_obj:
             json.dump(device_config, file_obj)
         file_path = here + '/' + uuid + '.json'
@@ -223,8 +226,12 @@ class rest_api(object):
     def push_cli_config(self, uuid, templateId=''):
         """Push CLI config to Device"""
         push_mount_point = 'template/device/config/attachcli/'
+        if '/' in uuid:
+            uuid = uuid.replace('/', '_')
+        logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
+        uuid = uuid.replace('_', '/')
         cli_template = {
             "deviceTemplateList": [
                 {
@@ -248,8 +255,12 @@ class rest_api(object):
     def push_template_config(self, uuid, templateId=''):
         """Push CLI config to Device"""
         push_mount_point = 'template/device/config/attachfeature'
+        if '/' in uuid:
+            uuid = uuid.replace('/', '_')
+        logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
+        uuid = uuid.replace('_', '/')
         config_data['csv-templateId'] = templateId
         feature_template = {
             "deviceTemplateList": [
@@ -274,8 +285,12 @@ class rest_api(object):
     def preview_config(self,uuid, templateId=''):
         """Preview the config"""
         preview_mount_point = 'template/device/config/config/'
+        if '/' in uuid:
+            uuid = uuid.replace('/', '_')
+        logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
+        uuid = uuid.replace('_', '/')
         config_data['csv-templateId']=templateId
 
         preview_template = {
