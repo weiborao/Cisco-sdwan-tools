@@ -1,3 +1,5 @@
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/weiborao/Cisco-sdwan-tools)
+
 # Cisco-sdwan-config-tool
 
 ## 1. What does the tool do?
