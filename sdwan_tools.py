@@ -90,6 +90,9 @@ if __name__ == "__main__":
                     data = response.json()
                     if data.get('config') and len(data.get('config')) > 0:
                         running_config = response.json()['config']
+                        if '/' in target_obj:
+                            target_obj = target_obj.replace('/', '_')
+                        logging.debug('Start of get_request %s' % target_obj)
                         with open(target_obj + ".txt", 'w') as file_obj:
                             file_obj.write(running_config)
                         print(running_config)

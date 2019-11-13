@@ -189,6 +189,9 @@ class rest_api(object):
 
     def get_device_running(self, uuid):
         """Get device running config"""
+        if '/' in uuid:
+            uuid = uuid.replace('/', '%2F')
+
         mount_point = 'template/config/running/' + uuid
         response = self.get_request(mount_point)
         return response
@@ -216,7 +219,7 @@ class rest_api(object):
         device_config = response.json()['data'][0]
         if '/' in uuid:
             uuid = uuid.replace('/', '_')
-        logging.debug('Start of get_request %s' % uuid)
+        logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'w') as file_obj:
             json.dump(device_config, file_obj)
         file_path = here + '/' + uuid + '.json'
