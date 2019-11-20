@@ -83,7 +83,6 @@ if __name__ == "__main__":
                 sys.exit(0)
 
             device_info = sdwanp.get_device_info(target_obj).json()
-            templateId=device_info['data'][0]['templateId']
             if action == 'show_run':
                 response = sdwanp.get_device_running(uuid=target_obj)
                 if response.status_code == 200:
@@ -104,6 +103,7 @@ if __name__ == "__main__":
                         print("Error:", response.status_code, response.text)
                 sys.exit(0)
 
+            templateId=device_info['data'][0]['templateId']
             if action == 'get':
                 response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
                 # logout = sdwanp.vmanage_logout()
