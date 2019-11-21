@@ -5,18 +5,17 @@
 ## 1. What does the tool do?
 
 - This SDWAN tool help user to quickly export device config data to a .json file. And user can edit it by text editor, and then push the config back to vManage;
-
 - This tool can get and push the devices with CLI templates as well as Feature templates;
-
 - This tool supports single tenant vManage as well as Multi-tenant vManage.
+- The sdwan_policy.py script helps user to quickly create site-list, tloc-list and control policy, and assemble them together to create a vSmart policy. 
 
 ## 2. How to Run the Script?
 
 **Prerequirment**: please install requests module.
 ```
 %pip install requests
-%git clone https://github.com/weiborao/Cisco-sdwan-tools
-%cd Cisco-sdwan-tools/
+%git clone https://github.com/weiborao/Cisco-sdwan-config-tool
+%cd Cisco-sdwan-config-tool/
 ```
 
 ### (1) Setup the environment
@@ -280,7 +279,74 @@ This is just for fun.
 ```
 [{'entry_time': 1573551900000, 'count': 3, 'family': 'mail', 'vdevice_name': '1.1.74.35', 'octets': 675}, {'entry_time': 1573551900000, 'count': 1, 'family': 'tunneling', 'vdevice_name': '100.110.0.25', 'octets': 3666}, {'entry_time': 1573551600000, 'count': 236, 'family': 'network-service', 'vdevice_name': '100.110.0.25', 'octets': 21096}, {'entry_time': 1573551600000, 'count': 123, 'family': 'network-service', 'vdevice_name': '1.1.74.3', 'octets': 21039}, {'entry_time': 1573551600000, 'count': 80, 'family': 'network-service', 'vdevice_name': '100.88.0.50', 'octets': 13874}, {'entry_time': 1573551600000, 'count': 26, 'family': 'network-service', 'vdevice_name': '1.1.74.35', 'octets': 12223}, {'entry_time': 1573551600000, 'count': 12, 'family': 'network-service', 'vdevice_name': '100.117.0.27', 'octets': 1642}, {'entry_time': 1573551600000, 'count': 26, 'family': 'network-service', 'vdevice_name': '1.1.74.163', 'octets': 1606}, {'entry_time': 1573551600000, 'count': 7, 'family': 'network-service', 'vdevice_name': '1.1.74.131', 'octets': 412}, {'entry_time': 1573551600000, 'count': 40, 'family': 'web', 'vdevice_name': '100.88.0.50', 'octets': 1274630}, {'entry_time': 1573551600000, 'count': 60, 'family': 'web', 'vdevice_name': '100.117.0.27', 'octets': 1049143}, {'entry_time': 1573551600000, 'count': 47, 'family': 'web', 'vdevice_name': '1.1.74.3', 'octets': 905876}, {'entry_time': 1573551600000, 'count': 40, 'family': 'web', 'vdevice_name': '1.1.74.35', 'octets': 415718}, {'entry_time': 1573551600000, 'count': 6, 'family': 'web', 'vdevice_name': '100.110.0.25', 'octets': 7460}, {'entry_time': 1573551600000, 'count': 1, 'family': 'web', 'vdevice_name': '1.1.74.163', 'octets': 516}, {'entry_time': 1573551600000, 'count': 1, 'family': 'standard', 'vdevice_name': '100.110.0.25', 'octets': 245509}, {'entry_time': 1573551600000, 'count': 46, 'family': 'standard', 'vdevice_name': '100.117.0.27', 'octets': 47940}, {'entry_time': 1573551600000, 'count': 6, 'family': 'standard', 'vdevice_name': '100.88.0.50', 'octets': 3167}, {'entry_time': 1573551600000, 'count': 2, 'family': 'mail', 'vdevice_name': '100.88.0.50', 'octets': 862}, {'entry_time': 1573551600000, 'count': 1, 'family': 'tunneling', 'vdevice_name': '100.117.0.27', 'octets': 7760}]
 ```
+### (4) The sdwan_policy tool
+
+This script will read the site_data.json, and get the site data.
+
+```json
+{
+  "NEW_SITES_TO_ADD": [
+    {
+      "site": "Chengdu",
+      "site_number": "35",
+      "POP_siteId": "135"
+    },
+    {
+      "site": "Wuhan",
+      "site_number": "36",
+      "POP_siteId": "136"
+    },
+    {
+      "site": "Shenzhen",
+      "site_number": "31",
+      "POP_siteId": "131"
+    },
+    {
+      "site": "Beijing",
+      "site_number": "10",
+      "POP_siteId": "100"
+    },
+    {
+      "site": "Shanghai",
+      "site_number": "20",
+      "POP_siteId": "101"
+    },
+    {
+      "site": "Guangzhou",
+      "site_number": "30",
+      "POP_siteId": "102"
+    }
+  ],
+  "OLD_SITES": [
+
+  ],
+  "TO_BE_ADDED": [
+    ]
+}
+```
+
+This script will do the following things:
+
+- [x] Read the site data, and create the BOX and POP site list for each site. Some rules are followed, for example, the POP site-ids are defined in the data, and BOX site-ids are converted from the POP site-id.
+
+- [x] Create TLOC list for each BOX site, the system-ips of POP site are converted from the POP site-ids, for example 1.1.10.1 and 1.1.10.2 are for Beijing POP site.
+
+- [x] Create customized topology policies, set next hop of all boxes to the POP sites.
+
+- [x] Combine the policies and site-list to create vSmart policy.
+
+  To run the script:
+
+  ```shell
+  python3 sdwan_policy policy add
+  
+  python3 sdwan_policy policy clear
+  ```
+
+  Have fun.
+
 ## 4. Caveats 
+
 This tool's task is spesific, maily uses the requests module to do the job.
 It requires user to input the right information, such as hostname, username, password and device_sn.
 
