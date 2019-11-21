@@ -1,0 +1,39 @@
+{
+  "NEW_SITES_TO_ADD": [
+    {
+      "site": "Chengdu",
+      "site_number": "35",
+      "POP_siteId": "135"
+    },
+    {
+      "site": "Wuhan",
+      "site_number": "36",
+      "POP_siteId": "136"
+    },
+    {
+      "site": "Shenzhen",
+      "site_number": "31",
+      "POP_siteId": "131"
+    },
+    {
+      "site": "Beijing",
+      "site_number": "10",
+      "POP_siteId": "100"
+    },
+    {
+      "site": "Shanghai",
+      "site_number": "20",
+      "POP_siteId": "101"
+    },
+    {
+      "site": "Guangzhou",
+      "site_number": "30",
+      "POP_siteId": "102"
+    }
+  ],
+  "OLD_SITES": [
+
+  ],
+  "TO_BE_ADDED": [
+    ]
+}

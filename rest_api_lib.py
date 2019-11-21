@@ -574,7 +574,7 @@ class rest_api(object):
         if response.status_code == 200:
             all_tloc = response.json()['data']
         for tloc in all_tloc:
-            if tloc['name'][4:] in site_name_list:
+            if tloc['name'][:-6] in site_name_list:
                 tloc_id = tloc['listId']
                 response = self.delete_tloc_list(tloc_id)
         return response
