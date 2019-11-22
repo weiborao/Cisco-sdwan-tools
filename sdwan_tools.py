@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
         logging.debug("Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
 
-        if action in ["get", "show_run", "push", "dpi"]:
+        if action in ["dpi", "int"]:
 
             sdwanp = rest_api(
                 vmanage_ip=SDWAN_IP,
@@ -81,6 +81,31 @@ if __name__ == "__main__":
                 response = sdwanp.query_dpi('6')
                 print(response.json()['data'])
                 sys.exit(0)
+
+            if action == 'int' and target_obj == 'stat':
+                response = sdwanp.query_all_int_statistics()
+                with open('all_int_statistics.json','w') as file_obj:
+                    json.dump(response.json()['data'], file_obj)
+                response = sdwanp.list_all_device()
+                device_list_data = response.json()['data']
+                for device in device_list_data:
+                    system_ip_list = [device['local-system-ip']]
+                    if device['reachability'] == 'reachable' and device['device-type'] == 'vedge':
+                        response = sdwanp.query_device_int_statistics(system_ip_list)
+                        with open(str(system_ip_list)+'.json','w') as file_obj:
+                            json.dump(response.json()['data'], file_obj)
+                sys.exit(0)
+
+        if action in ["get", "show_run", "push"]:
+
+            sdwanp = rest_api(
+                vmanage_ip=SDWAN_IP,
+                port=SDWAN_PORT,
+                username=SDWAN_USERNAME,
+                password=SDWAN_PASSWORD,
+                tenant=TENANT)
+            if TENANT != "single_tenant_mode":
+                sdwanp.set_tenant(TENANT)
 
             device_info = sdwanp.get_device_info(target_obj).json()
             if action == 'show_run':

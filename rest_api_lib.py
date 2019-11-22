@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-'''
+"""
 vManage Rest API library from
 https://github.com/ljm625/
 with some changes.
-'''
+"""
 
 import json
 import requests
@@ -95,12 +95,15 @@ class rest_api(object):
                 self.VSessionId = data["VSessionId"]
                 return True
 
-    def get_request(self, mount_point):
+    def get_request(self, mount_point, params=''):
         """GET request"""
         url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         logging.debug('Start of get_request %s' % (url + '\t' + str(headers)))
-        response = self.session.get(url, verify=False, headers=headers)
+        if params == '':
+            response = self.session.get(url, verify=False, headers=headers)
+        else:
+            response = self.session.get(url, params=params, verify=False, headers=headers)
         logging.debug('End of get_request %s' % (url + '\t' + str(headers) + '\n' +
                                                  str(response.status_code) + '\n' + str(response.text)))
         # if response.status_code>=300:
@@ -224,6 +227,12 @@ class rest_api(object):
         }
 
         response = self.post_request(mount_point, payload)
+        return response
+
+    def list_all_device(self):
+        """List all devices"""
+        mount_point = 'device'
+        response = self.get_request(mount_point)
         return response
 
     def get_device_info(self, uuid):
@@ -1054,6 +1063,143 @@ class rest_api(object):
                 response = self.delete_vsmart_policy(vsmart_policy_id)
         return response
 
+    def query_device_int_statistics(self, device_system_ip_list):
+        """Query device interface statistics"""
+        mount_point = 'statistics/interface/aggregation'
+        payload = {
+          "query": {
+            "condition": "AND",
+            "rules": [
+              {
+                "value": [
+                  "1"
+                ],
+                "field": "entry_time",
+                "type": "date",
+                "operator": "last_n_hours"
+              },
+              {
+                "value": device_system_ip_list,
+                "field": "vdevice_name",
+                "type": "string",
+                "operator": "in"
+              }
+            ]
+          },
+          "sort": [
+            {
+              "field": "entry_time",
+              "type": "date",
+              "order": "asc"
+            }
+          ],
+          "aggregation": {
+            "field": [
+              {
+                "property": "interface",
+                "size": 2000,
+                "sequence": 1
+              },
+              {
+                "property": "vdevice_name",
+                "size": 2000,
+                "sequence": 2
+              }
+            ],
+            "histogram": {
+              "property": "entry_time",
+              "type": "minute",
+              "interval": 10,
+              "order": "asc"
+            },
+            "metrics": [
+              {
+                "property": "rx_kbps",
+                "type": "avg"
+              },
+              {
+                "property": "tx_kbps",
+                "type": "avg"
+              },
+              {
+                "property": "rx_octets",
+                "type": "sum"
+              },
+              {
+                "property": "tx_octets",
+                "type": "sum"
+              }
+            ]
+          }
+        }
+        response = self.post_request(mount_point, payload)
+        return response
+
+    def query_all_int_statistics(self):
+        """Query device interface statistics"""
+        mount_point = 'statistics/interface/aggregation'
+        payload = {
+          "query": {
+            "condition": "AND",
+            "rules": [
+              {
+                "value": [
+                  "1"
+                ],
+                "field": "entry_time",
+                "type": "date",
+                "operator": "last_n_hours"
+              }
+            ]
+          },
+          "sort": [
+            {
+              "field": "entry_time",
+              "type": "date",
+              "order": "asc"
+            }
+          ],
+          "aggregation": {
+            "field": [
+              {
+                "property": "interface",
+                "size": 2000,
+                "sequence": 1
+              },
+              {
+                "property": "vdevice_name",
+                "size": 2000,
+                "sequence": 2
+              }
+            ],
+            "histogram": {
+              "property": "entry_time",
+              "type": "minute",
+              "interval": 10,
+              "order": "asc"
+            },
+            "metrics": [
+              {
+                "property": "rx_kbps",
+                "type": "avg"
+              },
+              {
+                "property": "tx_kbps",
+                "type": "avg"
+              },
+              {
+                "property": "rx_octets",
+                "type": "sum"
+              },
+              {
+                "property": "tx_octets",
+                "type": "sum"
+              }
+            ]
+          }
+        }
+        response = self.post_request(mount_point, payload)
+        return response
 
 def set_env():
     helpmsg = """Please choose the server you want to connect."""
@@ -1087,13 +1233,11 @@ def set_env():
             name=server_info['server_name'],
             hostname=server_info['hostname']))
 
-
 def show_env(SDWAN_SERVER, SDWAN_IP, TENANT):
     print("The current environment are:")
     print("Server name: {}".format(SDWAN_SERVER))
     print("Hostname: {}".format(SDWAN_IP))
     print("Tenant: {}".format(TENANT))
-
 
 def convert_site_list(site_number):
     """Convert site number to site_list"""
