@@ -1,10 +1,12 @@
 [![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/weiborao/Cisco-sdwan-tools)
 
-# Cisco-sdwan-config-tool
+# Cisco-sdwan-tools
 
-## 1. What does the tool do?
+[TOC]
 
-- This SDWAN tool help user to quickly export device config data to a .json file. And user can edit it by text editor, and then push the config back to vManage;
+## 1. What do the tools do?
+
+- This SDWAN tools help user to quickly export device config data to a .json file. And user can edit it by text editor, and then push the config back to vManage;
 - This tool can get and push the devices with CLI templates as well as Feature templates;
 - This tool supports single tenant vManage as well as Multi-tenant vManage.
 - The sdwan_policy.py script helps user to quickly create site-list, tloc-list and control policy, and assemble them together to create a vSmart policy. 
