@@ -83,11 +83,19 @@ if __name__ == "__main__":
                 sys.exit(0)
 
             if action == 'int' and target_obj == 'stat':
-                response = sdwanp.query_all_int_statistics()
-                with open('all_int_statistics.json','w') as file_obj:
-                    json.dump(response.json()['data'], file_obj)
                 response = sdwanp.list_all_device()
                 device_list_data = response.json()['data']
+                response = sdwanp.query_all_int_statistics()
+                all_int_data=response.json()['data']
+                all_int_stat=[]
+                for device in device_list_data:
+                    if device['reachability'] == 'reachable' and device['device-type'] == 'vedge':
+                        for int_stat in all_int_data:
+                            if int_stat["vdevice_name"] == device["local-system-ip"]:
+                                all_int_stat.append(int_stat)
+
+                with open('all_int_statistics.json','w') as file_obj:
+                    json.dump(all_int_stat, file_obj)
                 for device in device_list_data:
                     system_ip_list = [device['local-system-ip']]
                     if device['reachability'] == 'reachable' and device['device-type'] == 'vedge':
