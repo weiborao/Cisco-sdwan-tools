@@ -272,13 +272,14 @@ class rest_api(object):
         mount_point = 'template/device/config/input/'
         response = self.post_request(mount_point, payload)
         device_config = response.json()['data'][0]
+        device_config["templateId"]=templateId
         if '/' in uuid:
             uuid = uuid.replace('/', '_')
         logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'w') as file_obj:
             json.dump(device_config, file_obj)
         file_path = here + '/' + uuid + '.json'
-        print(file_path, '\n', device_config)
+        print(file_path, '\n', device_config, "\n**** Please edit it.")
         return response
 
     def push_cli_config(self, uuid, templateId=''):
@@ -289,6 +290,8 @@ class rest_api(object):
         logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
+            if config_data.get("templateId"):
+                del config_data["templateId"]
         uuid = uuid.replace('_', '/')
         cli_template = {
             "deviceTemplateList": [
@@ -318,6 +321,8 @@ class rest_api(object):
         logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'r') as file_obj:
             config_data = json.load(file_obj)
+            if config_data.get("templateId"):
+                del config_data["templateId"]
         uuid = uuid.replace('_', '/')
         config_data['csv-templateId'] = templateId
         feature_template = {
@@ -374,19 +379,24 @@ class rest_api(object):
         response = self.get_request(mount_point)
         return response
 
-    def create_device_input(self, template_id, device_id):
-        """Create device input from template"""
-        mount_point = 'template/device/config/input/'
-        payload = {
-            "templateId": template_id,
-            "deviceIds": [
-                device_id
-            ],
-            "isEdited": False,
-            "isMasterEdited": False
-        }
-        response = self.post_request(mount_point, payload)
-        return response
+    def select_template(self, device_sn):
+        """Select your template"""
+        your_choice = input("Do you want to choose a template for this device?(y/n):")
+        if your_choice == 'y':
+            response = self.list_all_template()
+            all_template_list = response.json()['data']
+            print("Please choose your template:")
+            for template in all_template_list:
+                print("({index}) {device_model}\t{template_name}".format(
+                    index=all_template_list.index(template),
+                    device_model=template["deviceType"],
+                    template_name=template["templateName"]))
+            template_choice = input("Please choose template:")
+            template_choice = int(template_choice)
+            templateId = all_template_list[template_choice]["templateId"]
+            return templateId
+        else:
+            return "Bye"
 
     def check_job(self, job_id):
         """Check Job Status"""

@@ -64,6 +64,7 @@ if __name__ == "__main__":
         else:
             TENANT = 'single_tenant_mode'
 
+        del server_info
         logging.debug("Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
 
         if action in ["dpi", "int"]:
@@ -74,6 +75,7 @@ if __name__ == "__main__":
                 username=SDWAN_USERNAME,
                 password=SDWAN_PASSWORD,
                 tenant=TENANT)
+            del SDWAN_PASSWORD
             if TENANT != "single_tenant_mode":
                 sdwanp.set_tenant(TENANT)
 
@@ -112,10 +114,10 @@ if __name__ == "__main__":
                 username=SDWAN_USERNAME,
                 password=SDWAN_PASSWORD,
                 tenant=TENANT)
+            del SDWAN_PASSWORD
             if TENANT != "single_tenant_mode":
                 sdwanp.set_tenant(TENANT)
 
-            device_info = sdwanp.get_device_info(target_obj).json()
             if action == 'show_run':
                 response = sdwanp.get_device_running(uuid=target_obj)
                 if response.status_code == 200:
@@ -136,46 +138,37 @@ if __name__ == "__main__":
                         print("Error:", response.status_code, response.text)
                 sys.exit(0)
 
+            device_info = sdwanp.get_device_info(target_obj).json()
             if device_info["data"][0]["configOperationMode"] == 'cli':
                 if device_info["data"][0].get("vbond"):
                     print("This device currently is in CLI mode.")
                 else:
                     print("This device is not activated.")
-                your_choice = input("Do you want to choose a template for this device?(y/n):")
-                if your_choice == 'y':
-                    response = sdwanp.list_all_template()
-                    all_template_list = response.json()['data']
-                    print("Please choose your template:")
-                    for template in all_template_list:
-                        print("({index}) {device_model}\t{template_name}".format(
-                            index=all_template_list.index(template),
-                            device_model=template["deviceType"],
-                            template_name=template["templateName"]))
-                    template_choice = input("Please choose template:")
-                    template_choice = int(template_choice)
-                    templateId = all_template_list[template_choice]["templateId"]
-                    response = sdwanp.create_device_input(templateId, target_obj)
-                    template_vars = response.json()['data'][0]
-                    print("Template saved...{}.json".format(target_obj))
-                    with open(target_obj+'.json', 'w') as file_obj:
-                        json.dump(template_vars, file_obj)
-                else:
-                    print("Bye")
-                sys.exit(0)
+                try:
+                    with open(target_obj + '.json', 'r') as f_obj:
+                        data = json.load(f_obj)
+                        if data.get("templateId"):
+                            templateId = data["templateId"]
+
+                except FileNotFoundError:
+                    templateId=sdwanp.select_template(target_obj)
+
             else:
                 templateId=device_info['data'][0]['templateId']
+            del device_info
 
             if action == 'get':
-                response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
-                # logout = sdwanp.vmanage_logout()
+                if templateId != "Bye":
+                    response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
+                    # logout = sdwanp.vmanage_logout()
                 sys.exit(0)
             if action == 'push':
                 template_type = sdwanp.get_template_type(templateId)
                 preview_config = sdwanp.preview_config(uuid=target_obj, templateId=templateId)
                 print(preview_config.text)
-                ready_to_go = input("Please check and confirm the configuration...(y/n):")
-                loop_control = 1
-                while loop_control == 1:
+
+                while True:
+                    ready_to_go = input("Please check and confirm the configuration...(y/n):")
                     if ready_to_go == 'y':
                         if template_type == 'file':
                             push_cli_response = sdwanp.push_cli_config(uuid=target_obj, templateId=templateId)
@@ -183,13 +176,13 @@ if __name__ == "__main__":
                         elif template_type == 'template':
                             push_template_response = sdwanp.push_template_config(uuid=target_obj, templateId=templateId)
                             job_id = push_template_response.json()
-                        loop_control = 0
+                        break
                     elif ready_to_go == 'n':
                         print("Job canceled...Exit")
                         sys.exit(0)
                     else:
                         print("Please input y or n.")
-                        ready_to_go = input("Please check and confirm the configuration...(y/n):")
+                        # ready_to_go = input("Please check and confirm the configuration...(y/n):")
 
                 job_status = sdwanp.check_job(job_id).json()
                 print('Job summary', '='*10, '\n Job Status: {status}'.format(
