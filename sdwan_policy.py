@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.WARNING, format=' %(asctime)s - %(levelname)s 
 # logging.disable(logging.CRITICAL)
 logging.debug("Start of program")
 
-SITE_DATA = 'site_data_chu.json'
+SITE_DATA = 'site_data.json'
 
 if __name__ == "__main__":
     help_msg = '''\nUsage: 
