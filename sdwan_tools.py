@@ -136,7 +136,35 @@ if __name__ == "__main__":
                         print("Error:", response.status_code, response.text)
                 sys.exit(0)
 
-            templateId=device_info['data'][0]['templateId']
+            if device_info["data"][0]["configOperationMode"] == 'cli':
+                if device_info["data"][0].get("vbond"):
+                    print("This device currently is in CLI mode.")
+                else:
+                    print("This device is not activated.")
+                your_choice = input("Do you want to choose a template for this device?(y/n):")
+                if your_choice == 'y':
+                    response = sdwanp.list_all_template()
+                    all_template_list = response.json()['data']
+                    print("Please choose your template:")
+                    for template in all_template_list:
+                        print("({index}) {device_model}\t{template_name}".format(
+                            index=all_template_list.index(template),
+                            device_model=template["deviceType"],
+                            template_name=template["templateName"]))
+                    template_choice = input("Please choose template:")
+                    template_choice = int(template_choice)
+                    templateId = all_template_list[template_choice]["templateId"]
+                    response = sdwanp.create_device_input(templateId, target_obj)
+                    template_vars = response.json()['data'][0]
+                    print("Template saved...{}.json".format(target_obj))
+                    with open(target_obj+'.json', 'w') as file_obj:
+                        json.dump(template_vars, file_obj)
+                else:
+                    print("Bye")
+                sys.exit(0)
+            else:
+                templateId=device_info['data'][0]['templateId']
+
             if action == 'get':
                 response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
                 # logout = sdwanp.vmanage_logout()

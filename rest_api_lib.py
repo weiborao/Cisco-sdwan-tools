@@ -368,6 +368,26 @@ class rest_api(object):
         push_response = self.post_request(preview_mount_point, preview_template)
         return push_response
 
+    def list_all_template(self):
+        """List all template"""
+        mount_point = 'template/device/'
+        response = self.get_request(mount_point)
+        return response
+
+    def create_device_input(self, template_id, device_id):
+        """Create device input from template"""
+        mount_point = 'template/device/config/input/'
+        payload = {
+            "templateId": template_id,
+            "deviceIds": [
+                device_id
+            ],
+            "isEdited": False,
+            "isMasterEdited": False
+        }
+        response = self.post_request(mount_point, payload)
+        return response
+
     def check_job(self, job_id):
         """Check Job Status"""
         mount_point = 'device/action/status/' + job_id['id']
@@ -1242,8 +1262,8 @@ def show_env(SDWAN_SERVER, SDWAN_IP, TENANT):
 def convert_site_list(site_number):
     """Convert site number to site_list"""
     site_list = []
-    list1 = site_number + '000000-' + site_number + '999999'
+    # list1 = site_number + '000000-' + site_number + '999999'
     list2 = site_number + '0000000-' + site_number + '9999999'
-    site_list.append(list1)
+    # site_list.append(list1)
     site_list.append(list2)
     return site_list
