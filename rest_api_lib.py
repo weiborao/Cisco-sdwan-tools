@@ -273,6 +273,12 @@ class rest_api(object):
         response = self.post_request(mount_point, payload)
         device_config = response.json()['data'][0]
         device_config["templateId"]=templateId
+        if templateId == "e0d2cc4a-6c65-4503-88c8-3bb95903fa29":
+            device_config["organization-name"]="\"China Unicom SDWAN T1\""
+            device_config["vbond-address"]="220.250.74.5"
+            device_config["controller-name"]= "\"China Unicom\""
+            device_config["admin-name"]="admin"
+            device_config["admin-password"]="admin"
         if '/' in uuid:
             uuid = uuid.replace('/', '_')
         logging.debug('Filename %s' % uuid)
