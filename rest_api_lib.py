@@ -283,7 +283,7 @@ class rest_api(object):
             uuid = uuid.replace('/', '_')
         logging.debug('Filename %s' % uuid)
         with open(uuid + '.json', 'w') as file_obj:
-            json.dump(device_config, file_obj)
+            json.dump(device_config, file_obj, indent=4)
         file_path = here + '/' + uuid + '.json'
         print(file_path, '\n', device_config, "\n**** Please edit it.")
         return response
