@@ -6,7 +6,6 @@
 import json
 import csv
 import sys
-from collections import OrderedDict
 
 def write_json(data, json_file):
     with open(json_file, "w") as f:
