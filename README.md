@@ -159,6 +159,10 @@ for string in str_list:
 The output will be:
 > vpn 0\n dns 114.114.114.114 primary\n interface ge0/4\n  ip dhcp-client\n  pppoe-client ppp-interface ppp1\n  no shutdown\n !\n interface ppp1\n  ppp authentication chap\n   hostname 86152074\n   password xxxxx\n  !\n  tunnel-interface\n   encapsulation ipsec\n   color biz-internet restrict\n   no allow-service bgp\n   allow-service dhcp\n   allow-service dns\n   allow-service icmp\n   no allow-service sshd\n   no allow-service netconf\n   no allow-service ntp\n   no allow-service ospf\n   no allow-service stun\n   allow-service https\n  !\n  mtu      1492\n  no shutdown\n !\n!\n
 
+Added a new script -- `csvtojson.py`, which can convert the csv file exported from vManage to json data file.
+
+`python3 csvtojson.py example.csv`
+
 5. Push the json data to vManage by running python3 sdwan_tools push device_sn
 `Cisco-sdwan-tools % python3 sdwan_tools.py push 1920C539181628S`
 
