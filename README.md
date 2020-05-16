@@ -2,7 +2,17 @@
 
 # Cisco-sdwan-tools
 
-[TOC]
+- [Cisco-sdwan-tools](#cisco-sdwan-tools)
+  - [1. What do the tools do?](#1-what-do-the-tools-do)
+  - [2. How to Run the Script?](#2-how-to-run-the-script)
+    - [(1) Setup the environment](#1-setup-the-environment)
+    - [(2) Export, Edit and Push the Config back](#2-export-edit-and-push-the-config-back)
+    - [(3) Other small tools:](#3-other-small-tools)
+    - [(4) The sdwan_policy tool](#4-the-sdwanpolicy-tool)
+  - [3. Caveats](#3-caveats)
+  - [4. Questions and Contact Info](#4-questions-and-contact-info)
+  - [5. License](#5-license)
+  - [6. Acknowledgments](#6-acknowledgments)
 
 ## 1. What do the tools do?
 
@@ -159,7 +169,7 @@ for string in str_list:
 The output will be:
 > vpn 0\n dns 114.114.114.114 primary\n interface ge0/4\n  ip dhcp-client\n  pppoe-client ppp-interface ppp1\n  no shutdown\n !\n interface ppp1\n  ppp authentication chap\n   hostname 86152074\n   password xxxxx\n  !\n  tunnel-interface\n   encapsulation ipsec\n   color biz-internet restrict\n   no allow-service bgp\n   allow-service dhcp\n   allow-service dns\n   allow-service icmp\n   no allow-service sshd\n   no allow-service netconf\n   no allow-service ntp\n   no allow-service ospf\n   no allow-service stun\n   allow-service https\n  !\n  mtu      1492\n  no shutdown\n !\n!\n
 
-Added a new script -- `csvtojson.py`, which can convert the csv file exported from vManage to json data file.
+**Added a new script -- `csvtojson.py`, which can convert the csv file exported from vManage to json data file.**
 
 `python3 csvtojson.py example.csv`
 
@@ -351,21 +361,21 @@ This script will do the following things:
 
   Have fun.
 
-## 4. Caveats 
+## 3. Caveats 
 
 This tool's task is spesific, maily uses the requests module to do the job.
 It requires user to input the right information, such as hostname, username, password and device_sn.
 
-## 5. Questions and Contact Info
+## 4. Questions and Contact Info
 
 If you have any issues or a pull request, you can submit a Issue or contact me directly。
 
 My Cisco CEC ID is: werao
 
-## 6. License
+## 5. License
 This project is licensed to you under the terms of the [Cisco Sample Code License](LICENSE).
 
-## 7. Acknowledgments
+## 6. Acknowledgments
 
 * Getting Started with Cisco SD-WAN REST APIs
   - `git clone https://github.com/ai-devnet/Getting-started-with-Cisco-SD-WAN-REST-APIs.git`
