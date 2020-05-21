@@ -1,1 +1,8 @@
-{"server_name": "chusdwan", "hostname": "180.52.12.48", "port": 443, "username": "admin", "password": "xddsad", "tenant": [{"name": "T1"}]}
+{
+  "server_name": "chusdwan",
+  "hostname": "180.52.12.48",
+  "port": 443,
+  "username": "admin",
+  "password": "xddsad",
+  "tenant": [{ "name": "T1" }]
+}

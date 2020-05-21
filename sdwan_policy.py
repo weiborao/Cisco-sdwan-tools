@@ -3,10 +3,9 @@
 import json
 import sys
 import logging
-from rest_api_lib import *
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from rest_api_lib import rest_api, set_env, show_env, convert_site_list
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logging.basicConfig(level=logging.WARNING, format=' %(asctime)s - %(levelname)s - %(message)s')
 # logging.disable(logging.CRITICAL)
 logging.debug("Start of program")
