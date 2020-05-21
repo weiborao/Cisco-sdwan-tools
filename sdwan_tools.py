@@ -2,7 +2,7 @@
 
 import json
 import sys
-from rest_api_lib import *
+from rest_api_lib import rest_api, set_env, show_env
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import logging
@@ -102,8 +102,8 @@ if __name__ == "__main__":
                     system_ip_list = [device['local-system-ip']]
                     if device['reachability'] == 'reachable' and device['device-type'] == 'vedge':
                         response = sdwanp.query_device_int_statistics(system_ip_list)
-                        with open(str(system_ip_list)+'.json','w') as file_obj:
-                            json.dump(response.json()['data'], file_obj)
+                        with open(str(system_ip_list[0])+'.json','w') as file_obj:
+                            json.dump(response.json()['data'], file_obj, indent=4)
                 sys.exit(0)
 
         if action in ["get", "show_run", "push"]:
