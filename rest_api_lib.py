@@ -13,7 +13,8 @@ import os
 import time
 import logging
 
-logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG,
+                    format=' %(asctime)s - %(levelname)s - %(message)s')
 # logging.disable(logging.CRITICAL)
 
 # logging.debug('Start of program')
@@ -69,13 +70,15 @@ class rest_api(object):
         if login_response.status_code >= 300:
             # print(
             # "Login Failed")
-            raise BaseException("ERROR : The username/password is not correct.")
+            raise BaseException(
+                "ERROR : The username/password is not correct.")
         if '<html>' in login_response.text:
             raise BaseException("ERROR : Login Failed.")
 
         self.session = sess
         # Get xsrf_token for 19.2 and later versions
-        response = self.session.get(base_url_str + "/dataservice/client/token", verify=False)
+        response = self.session.get(
+            base_url_str + "/dataservice/client/token", verify=False)
         if response.status_code == 200:
             self.token = response.text
 
@@ -89,7 +92,8 @@ class rest_api(object):
                 if str(item["name"]) == str(tenant):
                     tenant_id = item["tenantId"]
         if tenant_id:
-            resp = self.post_request("tenant/{}/vsessionid".format(tenant_id), {})
+            resp = self.post_request(
+                "tenant/{}/vsessionid".format(tenant_id), {})
             data = resp.json()
             if data.get("VSessionId"):
                 self.VSessionId = data["VSessionId"]
@@ -97,13 +101,15 @@ class rest_api(object):
 
     def get_request(self, mount_point, params=''):
         """GET request"""
-        url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
+        url = "https://%s:%s/dataservice/%s" % (
+            self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         logging.debug('Start of get_request %s' % (url + '\t' + str(headers)))
         if params == '':
             response = self.session.get(url, verify=False, headers=headers)
         else:
-            response = self.session.get(url, params=params, verify=False, headers=headers)
+            response = self.session.get(
+                url, params=params, verify=False, headers=headers)
         logging.debug('End of get_request %s' % (url + '\t' + str(headers) + '\n' +
                                                  str(response.status_code) + '\n' + str(response.text)))
         # if response.status_code>=300:
@@ -116,11 +122,14 @@ class rest_api(object):
 
     def post_request(self, mount_point, payload):
         """POST request"""
-        url = "https://%s:%s/dataservice/%s" % (self.vmanage_ip, self.port, mount_point)
+        url = "https://%s:%s/dataservice/%s" % (
+            self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         payload = json.dumps(payload)
-        logging.debug('Start of post_request %s' % (url + '\t' + str(headers) + '\n' + str(payload)))
-        response = self.session.post(url=url, data=payload, headers=headers, verify=False)
+        logging.debug('Start of post_request %s' %
+                      (url + '\t' + str(headers) + '\n' + str(payload)))
+        response = self.session.post(
+            url=url, data=payload, headers=headers, verify=False)
         logging.debug('End of post_request %s' % (url + '\t' + str(headers) + '\n' +
                                                   str(response.status_code) + '\n' + str(response.text)))
         return response
@@ -133,17 +142,23 @@ class rest_api(object):
         :param headers: The header
         :return: response
         """
-        url = "https://{}:{}/dataservice/{}".format(self.vmanage_ip, self.port, mount_point)
+        url = "https://{}:{}/dataservice/{}".format(
+            self.vmanage_ip, self.port, mount_point)
         headers = self.get_headers()
         if payload:
             payload = json.dumps(payload)
-            logging.debug('Start of put_request %s' % (url + '\t' + str(headers) + '\n' + str(payload)))
-            response = self.session.put(url=url, data=payload, headers=headers, verify=False)
-            logging.debug('End of put_request %s' % (url + '\t' + str(headers) + '\n'))
+            logging.debug('Start of put_request %s' %
+                          (url + '\t' + str(headers) + '\n' + str(payload)))
+            response = self.session.put(
+                url=url, data=payload, headers=headers, verify=False)
+            logging.debug('End of put_request %s' %
+                          (url + '\t' + str(headers) + '\n'))
         else:
-            logging.debug('Start of put_request %s' % (url + '\t' + str(headers) + '\n'))
+            logging.debug('Start of put_request %s' %
+                          (url + '\t' + str(headers) + '\n'))
             response = self.session.put(url=url, headers=headers, verify=False)
-            logging.debug('End of put_request %s' % (url + '\t' + str(headers) + '\n'))
+            logging.debug('End of put_request %s' %
+                          (url + '\t' + str(headers) + '\n'))
 
         return response
 
@@ -154,7 +169,8 @@ class rest_api(object):
         policy_list_ro_msg = "This policy list is a read only list and it cannot be deleted"
 
         headers = self.get_headers()
-        logging.debug('Start of delete_request %s' % (url + '\t' + str(headers) + '\n'))
+        logging.debug('Start of delete_request %s' %
+                      (url + '\t' + str(headers) + '\n'))
 
         response = self.session.delete(url=url, headers=headers, verify=False)
         logging.debug('End of delete_request %s' % (url + '\t' + str(headers) + '\n' +
@@ -272,13 +288,13 @@ class rest_api(object):
         mount_point = 'template/device/config/input/'
         response = self.post_request(mount_point, payload)
         device_config = response.json()['data'][0]
-        device_config["templateId"]=templateId
+        device_config["templateId"] = templateId
         if templateId == "e0d2cc4a-6c65-4503-88c8-3bb95903fa29":
-            device_config["organization-name"]="\"China Unicom SDWAN T1\""
-            device_config["vbond-address"]="220.250.74.5"
-            device_config["controller-name"]= "\"China Unicom\""
-            device_config["admin-name"]="admin"
-            device_config["admin-password"]="admin"
+            device_config["organization-name"] = "\"China Unicom SDWAN T1\""
+            device_config["vbond-address"] = "220.250.74.5"
+            device_config["controller-name"] = "\"China Unicom\""
+            device_config["admin-name"] = "admin"
+            device_config["admin-password"] = "admin"
         if '/' in uuid:
             uuid = uuid.replace('/', '_')
         logging.debug('Filename %s' % uuid)
@@ -342,7 +358,8 @@ class rest_api(object):
             ]
         }
         if uuid == config_data['csv-deviceId']:
-            feature_template['deviceTemplateList'][0]['device'].append(config_data)
+            feature_template['deviceTemplateList'][0]['device'].append(
+                config_data)
         else:
             print("UUID not equal")
             return 'UUID not equal'
@@ -376,7 +393,8 @@ class rest_api(object):
             return 'UUID not equal'
         time.sleep(1)
 
-        push_response = self.post_request(preview_mount_point, preview_template)
+        push_response = self.post_request(
+            preview_mount_point, preview_template)
         return push_response
 
     def list_all_template(self):
@@ -387,7 +405,8 @@ class rest_api(object):
 
     def select_template(self, device_sn):
         """Select your template"""
-        your_choice = input("Do you want to choose a template for this device?(y/n):")
+        your_choice = input(
+            "Do you want to choose a template for this device?(y/n):")
         if your_choice == 'y':
             response = self.list_all_template()
             all_template_list = response.json()['data']
@@ -599,7 +618,8 @@ class rest_api(object):
         for tloc in all_tloc:
             if tloc['name'] == tloc_name:
                 tloc_id = tloc['listId']
-                response = self.edit_tloc_list(tloc_name, tloc_ip_list, tloc_id)
+                response = self.edit_tloc_list(
+                    tloc_name, tloc_ip_list, tloc_id)
                 tloc_existed = True
 
         if tloc_existed == False:
@@ -832,10 +852,12 @@ class rest_api(object):
         for top_policy in all_top_policy:
             if top_policy['name'] == top_name:
                 top_policy_id = top_policy['definitionId']
-                response = self.edit_box_top_policy(top_name, pop_site_id, pop_tloc_list_id, top_policy_id, all_box_id)
+                response = self.edit_box_top_policy(
+                    top_name, pop_site_id, pop_tloc_list_id, top_policy_id, all_box_id)
                 top_policy_existed = True
         if top_policy_existed == False:
-            response = self.add_box_top_policy(top_name, pop_site_id, pop_tloc_list_id, all_box_id)
+            response = self.add_box_top_policy(
+                top_name, pop_site_id, pop_tloc_list_id, all_box_id)
             if response.status_code == 200:
                 top_policy_id = response.json()["definitionId"]
             else:
@@ -963,7 +985,8 @@ class rest_api(object):
         for top_policy in all_top_policy:
             if top_policy['name'] == top_name:
                 top_policy_id = top_policy['definitionId']
-                response = self.edit_pop_top_policy(top_name, box_site_id, top_policy_id)
+                response = self.edit_pop_top_policy(
+                    top_name, box_site_id, top_policy_id)
                 top_policy_existed = True
         if top_policy_existed == False:
             response = self.add_pop_top_policy(top_name, box_site_id)
@@ -1007,7 +1030,8 @@ class rest_api(object):
         }
 
         for key1, value1 in policy_data_pair.items():
-            policy_payload = {"definitionId": key1, "type": "control", "entries": []}
+            policy_payload = {"definitionId": key1,
+                              "type": "control", "entries": []}
             for value2 in value1:
                 site_list_payload = {
                     "direction": "out",
@@ -1034,7 +1058,8 @@ class rest_api(object):
         }
 
         for key1, value1 in policy_data_pair.items():
-            policy_payload = {"definitionId": key1, "type": "control", "entries": []}
+            policy_payload = {"definitionId": key1,
+                              "type": "control", "entries": []}
             for value2 in value1:
                 site_list_payload = {
                     "direction": "out",
@@ -1069,7 +1094,8 @@ class rest_api(object):
         for vsmart_policy in all_vsmart_policy:
             if vsmart_policy['policyName'] == policy_name:
                 vsmart_policy_id = vsmart_policy['policyId']
-                response = self.edit_vsmart_policy(policy_name, policy_data_pair, vsmart_policy_id)
+                response = self.edit_vsmart_policy(
+                    policy_name, policy_data_pair, vsmart_policy_id)
                 vsmart_policy_existed = True
         if vsmart_policy_existed == False:
             response = self.add_vsmart_policy(policy_name, policy_data_pair)
@@ -1103,70 +1129,70 @@ class rest_api(object):
         """Query device interface statistics"""
         mount_point = 'statistics/interface/aggregation'
         payload = {
-          "query": {
-            "condition": "AND",
-            "rules": [
-              {
-                "value": [
-                  "1"
-                ],
-                "field": "entry_time",
-                "type": "date",
-                "operator": "last_n_hours"
-              },
-              {
-                "value": device_system_ip_list,
-                "field": "vdevice_name",
-                "type": "string",
-                "operator": "in"
-              }
-            ]
-          },
-          "sort": [
-            {
-              "field": "entry_time",
-              "type": "date",
-              "order": "asc"
-            }
-          ],
-          "aggregation": {
-            "field": [
-              {
-                "property": "interface",
-                "size": 2000,
-                "sequence": 1
-              },
-              {
-                "property": "vdevice_name",
-                "size": 2000,
-                "sequence": 2
-              }
-            ],
-            "histogram": {
-              "property": "entry_time",
-              "type": "minute",
-              "interval": 10,
-              "order": "asc"
+            "query": {
+                "condition": "AND",
+                "rules": [
+                    {
+                        "value": [
+                            "1"
+                        ],
+                        "field": "entry_time",
+                        "type": "date",
+                        "operator": "last_n_hours"
+                    },
+                    {
+                        "value": device_system_ip_list,
+                        "field": "vdevice_name",
+                        "type": "string",
+                        "operator": "in"
+                    }
+                ]
             },
-            "metrics": [
-              {
-                "property": "rx_kbps",
-                "type": "avg"
-              },
-              {
-                "property": "tx_kbps",
-                "type": "avg"
-              },
-              {
-                "property": "rx_octets",
-                "type": "sum"
-              },
-              {
-                "property": "tx_octets",
-                "type": "sum"
-              }
-            ]
-          }
+            "sort": [
+                {
+                    "field": "entry_time",
+                    "type": "date",
+                    "order": "asc"
+                }
+            ],
+            "aggregation": {
+                "field": [
+                    {
+                        "property": "interface",
+                        "size": 2000,
+                        "sequence": 1
+                    },
+                    {
+                        "property": "vdevice_name",
+                        "size": 2000,
+                        "sequence": 2
+                    }
+                ],
+                "histogram": {
+                    "property": "entry_time",
+                    "type": "minute",
+                    "interval": 10,
+                    "order": "asc"
+                },
+                "metrics": [
+                    {
+                        "property": "rx_kbps",
+                        "type": "avg"
+                    },
+                    {
+                        "property": "tx_kbps",
+                        "type": "avg"
+                    },
+                    {
+                        "property": "rx_octets",
+                        "type": "sum"
+                    },
+                    {
+                        "property": "tx_octets",
+                        "type": "sum"
+                    }
+                ]
+            }
         }
         response = self.post_request(mount_point, payload)
         return response
@@ -1175,67 +1201,68 @@ class rest_api(object):
         """Query device interface statistics"""
         mount_point = 'statistics/interface/aggregation'
         payload = {
-          "query": {
-            "condition": "AND",
-            "rules": [
-              {
-                "value": [
-                  "1"
-                ],
-                "field": "entry_time",
-                "type": "date",
-                "operator": "last_n_hours"
-              }
-            ]
-          },
-          "sort": [
-            {
-              "field": "entry_time",
-              "type": "date",
-              "order": "asc"
-            }
-          ],
-          "aggregation": {
-            "field": [
-              {
-                "property": "interface",
-                "size": 2000,
-                "sequence": 1
-              },
-              {
-                "property": "vdevice_name",
-                "size": 2000,
-                "sequence": 2
-              }
-            ],
-            "histogram": {
-              "property": "entry_time",
-              "type": "minute",
-              "interval": 10,
-              "order": "asc"
+            "query": {
+                "condition": "AND",
+                "rules": [
+                    {
+                        "value": [
+                            "1"
+                        ],
+                        "field": "entry_time",
+                        "type": "date",
+                        "operator": "last_n_hours"
+                    }
+                ]
             },
-            "metrics": [
-              {
-                "property": "rx_kbps",
-                "type": "avg"
-              },
-              {
-                "property": "tx_kbps",
-                "type": "avg"
-              },
-              {
-                "property": "rx_octets",
-                "type": "sum"
-              },
-              {
-                "property": "tx_octets",
-                "type": "sum"
-              }
-            ]
-          }
+            "sort": [
+                {
+                    "field": "entry_time",
+                    "type": "date",
+                    "order": "asc"
+                }
+            ],
+            "aggregation": {
+                "field": [
+                    {
+                        "property": "interface",
+                        "size": 2000,
+                        "sequence": 1
+                    },
+                    {
+                        "property": "vdevice_name",
+                        "size": 2000,
+                        "sequence": 2
+                    }
+                ],
+                "histogram": {
+                    "property": "entry_time",
+                    "type": "minute",
+                    "interval": 10,
+                    "order": "asc"
+                },
+                "metrics": [
+                    {
+                        "property": "rx_kbps",
+                        "type": "avg"
+                    },
+                    {
+                        "property": "tx_kbps",
+                        "type": "avg"
+                    },
+                    {
+                        "property": "rx_octets",
+                        "type": "sum"
+                    },
+                    {
+                        "property": "tx_octets",
+                        "type": "sum"
+                    }
+                ]
+            }
         }
         response = self.post_request(mount_point, payload)
         return response
+
 
 def set_env():
     helpmsg = """Please choose the server you want to connect."""
@@ -1269,11 +1296,13 @@ def set_env():
             name=server_info['server_name'],
             hostname=server_info['hostname']))
 
+
 def show_env(SDWAN_SERVER, SDWAN_IP, TENANT):
     print("The current environment are:")
     print("Server name: {}".format(SDWAN_SERVER))
     print("Hostname: {}".format(SDWAN_IP))
     print("Tenant: {}".format(TENANT))
+
 
 def convert_site_list(site_number):
     """Convert site number to site_list"""

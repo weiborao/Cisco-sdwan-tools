@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import logging
 import json
 import sys
 from rest_api_lib import rest_api, set_env, show_env
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-import logging
-logging.basicConfig(level=logging.WARNING, format=' %(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING,
+                    format=' %(asctime)s - %(levelname)s - %(message)s')
 # logging.disable(logging.CRITICAL)
 logging.debug("Start of program")
 
@@ -65,7 +66,8 @@ if __name__ == "__main__":
             TENANT = 'single_tenant_mode'
 
         del server_info
-        logging.debug("Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
+        logging.debug(
+            "Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
 
         if action in ["dpi", "int"]:
 
@@ -88,22 +90,24 @@ if __name__ == "__main__":
                 response = sdwanp.list_all_device()
                 device_list_data = response.json()['data']
                 response = sdwanp.query_all_int_statistics()
-                all_int_data=response.json()['data']
-                all_int_stat=[]
+                all_int_data = response.json()['data']
+                all_int_stat = []
                 for device in device_list_data:
                     if device['reachability'] == 'reachable' and device['device-type'] == 'vedge':
                         for int_stat in all_int_data:
                             if int_stat["vdevice_name"] == device["local-system-ip"]:
                                 all_int_stat.append(int_stat)
 
-                with open('all_int_statistics.json','w') as file_obj:
+                with open('all_int_statistics.json', 'w') as file_obj:
                     json.dump(all_int_stat, file_obj)
                 for device in device_list_data:
                     system_ip_list = [device['local-system-ip']]
                     if device['reachability'] == 'reachable' and device['device-type'] == 'vedge':
-                        response = sdwanp.query_device_int_statistics(system_ip_list)
-                        with open(str(system_ip_list[0])+'.json','w') as file_obj:
-                            json.dump(response.json()['data'], file_obj, indent=4)
+                        response = sdwanp.query_device_int_statistics(
+                            system_ip_list)
+                        with open(str(system_ip_list[0])+'.json', 'w') as file_obj:
+                            json.dump(response.json()[
+                                      'data'], file_obj, indent=4)
                 sys.exit(0)
 
         if action in ["get", "show_run", "push"]:
@@ -151,30 +155,35 @@ if __name__ == "__main__":
                             templateId = data["templateId"]
 
                 except FileNotFoundError:
-                    templateId=sdwanp.select_template(target_obj)
+                    templateId = sdwanp.select_template(target_obj)
 
             else:
-                templateId=device_info['data'][0]['templateId']
+                templateId = device_info['data'][0]['templateId']
             del device_info
 
             if action == 'get':
                 if templateId != "Bye":
-                    response = sdwanp.get_device_cli_data(uuid=target_obj, templateId=templateId)
+                    response = sdwanp.get_device_cli_data(
+                        uuid=target_obj, templateId=templateId)
                     # logout = sdwanp.vmanage_logout()
                 sys.exit(0)
             if action == 'push':
                 template_type = sdwanp.get_template_type(templateId)
-                preview_config = sdwanp.preview_config(uuid=target_obj, templateId=templateId)
+                preview_config = sdwanp.preview_config(
+                    uuid=target_obj, templateId=templateId)
                 print(preview_config.text)
 
                 while True:
-                    ready_to_go = input("Please check and confirm the configuration...(y/n):")
+                    ready_to_go = input(
+                        "Please check and confirm the configuration...(y/n):")
                     if ready_to_go == 'y':
                         if template_type == 'file':
-                            push_cli_response = sdwanp.push_cli_config(uuid=target_obj, templateId=templateId)
+                            push_cli_response = sdwanp.push_cli_config(
+                                uuid=target_obj, templateId=templateId)
                             job_id = push_cli_response.json()
                         elif template_type == 'template':
-                            push_template_response = sdwanp.push_template_config(uuid=target_obj, templateId=templateId)
+                            push_template_response = sdwanp.push_template_config(
+                                uuid=target_obj, templateId=templateId)
                             job_id = push_template_response.json()
                         break
                     elif ready_to_go == 'n':
@@ -186,7 +195,7 @@ if __name__ == "__main__":
 
                 job_status = sdwanp.check_job(job_id).json()
                 print('Job summary', '='*10, '\n Job Status: {status}'.format(
-                status = job_status['data'][0]['status']))
+                    status=job_status['data'][0]['status']))
                 print('Job activies:')
                 for item in job_status['data'][0]['activity']:
                     print(item)

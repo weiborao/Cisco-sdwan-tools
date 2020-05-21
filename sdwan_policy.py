@@ -6,7 +6,8 @@ import logging
 from rest_api_lib import rest_api, set_env, show_env, convert_site_list
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-logging.basicConfig(level=logging.WARNING, format=' %(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.WARNING,
+                    format=' %(asctime)s - %(levelname)s - %(message)s')
 # logging.disable(logging.CRITICAL)
 logging.debug("Start of program")
 
@@ -55,7 +56,8 @@ if __name__ == "__main__":
         else:
             TENANT = 'single_tenant_mode'
 
-        logging.debug("Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
+        logging.debug(
+            "Current environment is : server\t{}\ttenant\t{}".format(SDWAN_IP, TENANT))
 
         try:
             with open(SITE_DATA, 'r') as f_obj:
@@ -117,7 +119,8 @@ if __name__ == "__main__":
                     # if site['name'][4:] in site_name_list:
                     site_list_data[site["name"]] = site["listId"]
 
-                logging.debug('*' * 10 + 'Site List \n %s' % str(site_list_data))
+                logging.debug('*' * 10 + 'Site List \n %s' %
+                              str(site_list_data))
 
                 response = sdwanp.list_tloc_list()
                 tloc_list_data = {}
@@ -126,7 +129,8 @@ if __name__ == "__main__":
                 for tloc in all_tloc:
                     tloc_list_data[tloc["name"]] = tloc["listId"]
 
-                logging.debug('*' * 10 + 'TLOC List \n %s' % str(tloc_list_data))
+                logging.debug('*' * 10 + 'TLOC List \n %s' %
+                              str(tloc_list_data))
 
                 # ADD BOX Topology Policy
                 # Need top_name, pop_site_id, pop_tloc_list_id, top_policy_id, all_box_id
@@ -139,7 +143,8 @@ if __name__ == "__main__":
                     all_box_id = sdwanp.get_site_id_by_name("BOX_ALL")
                     logging.debug('*' * 10 + 'BOX_ALL \n %s' % str(all_box_id))
 
-                    sdwanp.chu_add_box_top_policy(top_name, pop_site_id, pop_tloc_list_id, all_box_id)
+                    sdwanp.chu_add_box_top_policy(
+                        top_name, pop_site_id, pop_tloc_list_id, all_box_id)
 
                 # ADD POP Topology Policy
                 # Need top_name, box_site_id
@@ -157,7 +162,8 @@ if __name__ == "__main__":
                 for top_data in all_top_data:
                     top_list_data[top_data["name"]] = top_data["definitionId"]
 
-                logging.debug('*' * 10 + 'Topology Policy Data \n %s' % str(top_list_data))
+                logging.debug('*' * 10 + 'Topology Policy Data \n %s' %
+                              str(top_list_data))
 
                 # Assemble the policy
                 policy_data_pair = {}
@@ -170,11 +176,13 @@ if __name__ == "__main__":
                         policy_data_pair[value1] = temp_site
 
                 del key1, value1, temp_site, key2, value2
-                logging.debug('*' * 10 + 'Policy Data \n %s' % str(policy_data_pair))
+                logging.debug('*' * 10 + 'Policy Data \n %s' %
+                              str(policy_data_pair))
 
                 # Create vSmart policy
                 vsmart_policy_name = "Custmized_HUB_SPOKE"
-                sdwanp.chu_add_vsmart_policy(vsmart_policy_name, policy_data_pair)
+                sdwanp.chu_add_vsmart_policy(
+                    vsmart_policy_name, policy_data_pair)
 
             if action == 'policy' and target_obj == 'clear':
                 # Delete vSmart Policy
