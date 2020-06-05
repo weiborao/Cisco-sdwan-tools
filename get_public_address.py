@@ -2,14 +2,13 @@
 
 import json
 import sys
-from rest_api_lib import *
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from rest_api_lib import rest_api, set_env, show_env
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import logging
 
 logging.basicConfig(level=logging.WARNING, format=' %(asctime)s - %(levelname)s - %(message)s')
-# logging.disable(logging.CRITICAL)
+logging.disable(logging.CRITICAL)
 logging.debug("Start of program")
 
 if __name__ == "__main__":
@@ -90,7 +89,9 @@ if __name__ == "__main__":
                             pub_add['host-name'] = data['vdevice-host-name']
                             pub_add['public_ip'] = data['public-ip']
                             pub_add_list.append(pub_add)
-                for pub_add in pub_add_list:
+                temp = []
+                [temp.append(i) for i in pub_add_list if not i in temp]
+                for pub_add in temp:
                     print(pub_add['host-name']+'\t'+pub_add['public_ip'])
                 sys.exit(0)
 

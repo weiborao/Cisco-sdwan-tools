@@ -7,10 +7,12 @@ import json
 import csv
 import sys
 
+
 def write_json(data, json_file):
     with open(json_file, "w") as f:
         f.write(json.dumps(data, sort_keys=False, indent=4, separators=(
-            ',', ': '), encoding="utf-8", ensure_ascii=False))
+            ',', ': '), ensure_ascii=False))
+
 
 def csv_json(file):
 
@@ -23,6 +25,7 @@ def csv_json(file):
             if '/' in json_file:
                 json_file = json_file.replace('/', '_')
             write_json(row, json_file)
+
 
 if __name__ == "__main__":
     help_msg = '''\nUsage: 
