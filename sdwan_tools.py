@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 3:
         print(help_msg)
-        sys.exit(0)
+        # sys.exit(0)
     else:
         action = sys.argv[1]
         target_obj = sys.argv[2]
@@ -84,7 +84,7 @@ if __name__ == "__main__":
             if action == 'dpi' and target_obj == 'info':
                 response = sdwanp.query_dpi('6')
                 print(response.json()['data'])
-                sys.exit(0)
+                # sys.exit(0)
 
             if action == 'int' and target_obj == 'stat':
                 response = sdwanp.list_all_device()
@@ -108,7 +108,7 @@ if __name__ == "__main__":
                         with open(str(system_ip_list[0])+'.json', 'w') as file_obj:
                             json.dump(response.json()[
                                       'data'], file_obj, indent=4)
-                sys.exit(0)
+                # sys.exit(0)
 
         if action in ["get", "show_run", "push"]:
 
@@ -140,7 +140,7 @@ if __name__ == "__main__":
                         print(err_msg)
                     else:
                         print("Error:", response.status_code, response.text)
-                sys.exit(0)
+                # sys.exit(0)
 
             device_info = sdwanp.get_device_info(target_obj).json()
             if device_info["data"][0]["configOperationMode"] == 'cli':
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                     response = sdwanp.get_device_cli_data(
                         uuid=target_obj, templateId=templateId)
                     # logout = sdwanp.vmanage_logout()
-                sys.exit(0)
+                # sys.exit(0)
             if action == 'push':
                 template_type = sdwanp.get_template_type(templateId)
                 preview_config = sdwanp.preview_config(
@@ -188,6 +188,7 @@ if __name__ == "__main__":
                         break
                     elif ready_to_go == 'n':
                         print("Job canceled...Exit")
+                        sdwanp.logout()
                         sys.exit(0)
                     else:
                         print("Please input y or n.")
@@ -199,20 +200,23 @@ if __name__ == "__main__":
                 print('Job activies:')
                 for item in job_status['data'][0]['activity']:
                     print(item)
-                # logout = sdwanp.vmanage_logout()
-                sys.exit(0)
+
+                # sys.exit(0)
 
         elif action == 'set' and target_obj == 'env':
             server_info = None
             set_env()
-            sys.exit(0)
+            # sys.exit(0)
 
         elif action == 'show' and target_obj == 'env':
             show_env(SDWAN_SERVER, SDWAN_IP, TENANT)
-            sys.exit(0)
+            # sys.exit(0)
 
         else:
             print("""输入参数不正确""")
             print(help_msg)
+        
+        sdwanp.logout()
 
 logging.debug("End of program")
+sys.exit(0)

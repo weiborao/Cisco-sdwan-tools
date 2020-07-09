@@ -93,6 +93,8 @@ if __name__ == "__main__":
                 [temp.append(i) for i in pub_add_list if not i in temp]
                 for pub_add in temp:
                     print(pub_add['host-name']+'\t'+pub_add['public_ip'])
+                
+                response = sdwanp.logout()
                 sys.exit(0)
 
         elif action == 'set' and target_obj == 'env':

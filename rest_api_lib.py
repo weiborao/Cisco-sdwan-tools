@@ -82,6 +82,17 @@ class rest_api(object):
         if response.status_code == 200:
             self.token = response.text
 
+
+    def logout(self):
+        """Logout vManage"""
+        mount_point = 'logout'
+        url = "https://%s:%s/%s" % (
+            self.vmanage_ip, self.port, mount_point)
+        headers = self.get_headers()
+        logging.debug('Start of get_request %s' % (url + '\t' + str(headers)))
+        response = self.session.get(url, verify=False, headers=headers)
+        return response
+
     def set_tenant(self, tenant):
         self.VSessionId = None
         resp = self.get_request("tenant")
