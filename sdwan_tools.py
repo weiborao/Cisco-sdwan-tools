@@ -86,7 +86,7 @@ if __name__ == "__main__":
                 print(response.json()['data'])
                 # sys.exit(0)
 
-            if action == 'int' and target_obj == 'stat':
+            elif action == 'int' and target_obj == 'stat':
                 response = sdwanp.list_all_device()
                 device_list_data = response.json()['data']
                 response = sdwanp.query_all_int_statistics()
@@ -109,8 +109,9 @@ if __name__ == "__main__":
                             json.dump(response.json()[
                                       'data'], file_obj, indent=4)
                 # sys.exit(0)
+            sdwanp.logout()
 
-        if action in ["get", "show_run", "push"]:
+        elif action in ["get", "show_run", "push"]:
 
             sdwanp = rest_api(
                 vmanage_ip=SDWAN_IP,
@@ -140,7 +141,10 @@ if __name__ == "__main__":
                         print(err_msg)
                     else:
                         print("Error:", response.status_code, response.text)
-                # sys.exit(0)
+
+                sdwanp.logout()
+                logging.debug("End of program")
+                sys.exit(0)
 
             device_info = sdwanp.get_device_info(target_obj).json()
             if device_info["data"][0]["configOperationMode"] == 'cli':
@@ -202,6 +206,9 @@ if __name__ == "__main__":
                     print(item)
 
                 # sys.exit(0)
+            sdwanp.logout()
+            logging.debug("End of program")
+            sys.exit(0)
 
         elif action == 'set' and target_obj == 'env':
             server_info = None
@@ -216,7 +223,6 @@ if __name__ == "__main__":
             print("""输入参数不正确""")
             print(help_msg)
         
-        sdwanp.logout()
 
 logging.debug("End of program")
 sys.exit(0)
