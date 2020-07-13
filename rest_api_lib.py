@@ -77,8 +77,11 @@ class rest_api(object):
 
         self.session = sess
         # Get xsrf_token for 19.2 and later versions
-        response = self.session.get(
-            base_url_str + "/dataservice/client/token", verify=False)
+
+        logging.debug('Start of get_request %s' % (
+            base_url_str + "/dataservice/client/token" ))
+
+        response = self.session.get(base_url_str + "/dataservice/client/token", verify=False)
         if response.status_code == 200:
             self.token = response.text
 
